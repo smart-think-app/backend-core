@@ -1,4 +1,4 @@
-module backend-core
+module github.com/smart-think-app/backend-core
 
 go 1.16
 

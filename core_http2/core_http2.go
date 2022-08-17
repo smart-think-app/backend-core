@@ -1,9 +1,9 @@
 package core_http2
 
 import (
-	"backend-core/core_error"
 	"encoding/json"
 	"fmt"
+	"github.com/smart-think-app/backend-core/core_error"
 	"golang.org/x/net/http2"
 	"io/ioutil"
 	"net/http"
