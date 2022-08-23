@@ -22,6 +22,10 @@ func Long() EsValueType {
 func Integer() EsValueType {
 	return EsValueType{Type: "integer"}
 }
+
+func Nested() EsValueType {
+	return EsValueType{Type: "nested"}
+}
 type esProperties struct {
 	Field string
 	Type EsValueType
@@ -29,6 +33,8 @@ type esProperties struct {
 
 type IEsMapping interface {
 	SetType(field string , typeValue EsValueType) *esMapping
+	SetCustomMapping(mapping map[string]interface{}) *esMapping
+	SetNestedType(nestedField string ,field string , typeValue EsValueType) *esMapping
 	Done() map[string]interface{}
 }
 type esMapping struct {
@@ -45,8 +51,33 @@ func (es *esMapping) SetType(field string , typeValue EsValueType) *esMapping {
 	if len(typeValue.Type) == 0 {
 		return es
 	}
-	es.Properties[field] = map[string]string{
+	es.Properties[field] = map[string]interface{}{
 		"type": typeValue.Type,
+	}
+	return es
+}
+
+func (es *esMapping) SetCustomMapping(mapping map[string]interface{}) *esMapping {
+	es.Properties = mapping
+	return es
+}
+
+func (es *esMapping) SetNestedType(nestedField string ,field string , typeValue EsValueType) *esMapping {
+	if len(typeValue.Type) == 0 {
+		return es
+	}
+
+	nestedObject,ok := es.Properties[nestedField].(map[string]interface{})
+	if nestedObject != nil && ok {
+		if nestedObject["properties"] == nil {
+			nestedObject["properties"] = make(map[string]interface{})
+		}
+		properties, ok2 := nestedObject["properties"].(map[string]interface{})
+		if ok2 {
+			properties[field] =  map[string]string{
+				"type": typeValue.Type,
+			}
+		}
 	}
 	return es
 }

@@ -6,7 +6,7 @@ import (
 
 type IEsCore interface {
 	CreateIndex(index string) error
-	CreateIndexWithMapping(index string, mapping interface{}) error
+	CreateIndexWithMapping(index string, mapping IEsMapping) error
 	SetAuthorization(token string)
 }
 type esCore struct {
@@ -35,6 +35,10 @@ func(es *esCore) CreateIndex(index string) error {
 	return nil
 }
 
-func(es *esCore) CreateIndexWithMapping(index string, mapping interface{}) error {
+func(es *esCore) CreateIndexWithMapping(index string, mapping IEsMapping) error {
+	err := es.EsProxy.PutMethod(index , nil , mapping.Done(),nil , []string{"Authorization"})
+	if err != nil {
+		return err
+	}
 	return nil
 }
